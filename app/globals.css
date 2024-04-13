@@ -4,18 +4,12 @@
 
 @layer base {
   a {
-    @apply text-blue-600;
-  }
-}
-
-@layer utilities {
-  .bigger-text {
-    @apply text-3xl font-semibold;
+    @apply text-orange-500 underline-offset-4;
   }
 }
 
 @layer components {
-  .btn {
-    @apply w-full bg-black h-10 text-white rounded-xl;
+  .primary-btn {
+    @apply w-full text-white text-center h-10 flex items-center justify-center bg-orange-500 font-semibold rounded-md hover:bg-orange-400 transition-colors;
   }
 }
