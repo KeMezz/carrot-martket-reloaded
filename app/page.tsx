@@ -7,7 +7,7 @@ export default function Home() {
             className="bg-gray-100 w-full"
             placeholder="Write your email"
           />
-          <span className="group-focus-within:block hidden">
+          <span className="group-focus-within:block hidden w-[104.392px]">
             Make sure it is a valid email...
           </span>
           <button>Submit</button>
