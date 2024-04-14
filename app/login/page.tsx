@@ -3,7 +3,7 @@
 import FormButton from "@/components/form-btn";
 import FormInput from "@/components/form-input";
 import SocialLogin from "@/components/social-login";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { handleForm } from "./actions";
 
 export default function Login() {
@@ -31,11 +31,7 @@ export default function Login() {
           required={true}
           errors={state?.errors ?? []}
         />
-        <FormButton
-          loading={false}
-          text="로그인"
-          loadingMessage="로그인 중..."
-        />
+        <FormButton text="로그인" loadingMessage="로그인 중..." />
       </form>
       <SocialLogin />
     </div>
