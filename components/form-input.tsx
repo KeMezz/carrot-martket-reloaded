@@ -1,3 +1,5 @@
+import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
+
 interface FormInputProps {
   type: string;
   name: string;
@@ -22,11 +24,19 @@ export default function FormInput({
         placeholder={placeholder}
         required={required}
       />
-      {errors.map((error, i) => (
-        <span key={i} className="text-red-500 font-medium">
-          {error}
-        </span>
-      ))}
+      {errors?.length ? (
+        <div className="flex flex-col gap-2 mt-2">
+          {errors.map((error, i) => (
+            <span
+              key={i}
+              className="text-red-500 font-medium flex items-center gap-2 text-sm"
+            >
+              <ExclamationTriangleIcon className="size-4" />
+              {error}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
