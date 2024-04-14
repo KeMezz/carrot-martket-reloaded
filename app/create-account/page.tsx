@@ -14,20 +14,29 @@ export default function CreateAccount() {
         </h2>
       </div>
       <form className="flex flex-col gap-5">
-        <FormInput type="text" placeholder="이름" required={true} errors={[]} />
         <FormInput
+          name="username"
+          type="text"
+          placeholder="이름"
+          required={true}
+          errors={[]}
+        />
+        <FormInput
+          name="email"
           type="email"
           placeholder="이메일"
           required={true}
           errors={[]}
         />
         <FormInput
+          name="password"
           type="password"
           placeholder="비밀번호"
           required={true}
           errors={[]}
         />
         <FormInput
+          name="confirm_password"
           type="password"
           placeholder="비밀번호 확인"
           required={true}
