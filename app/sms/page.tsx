@@ -1,6 +1,5 @@
 import FormButton from "@/components/form-btn";
 import FormInput from "@/components/form-input";
-import SocialLogin from "@/components/social-login";
 
 export default function SMSLogin() {
   return (
@@ -17,16 +16,14 @@ export default function SMSLogin() {
           type="number"
           placeholder="휴대폰 번호"
           required={true}
-          errors={[]}
         />
         <FormInput
           name="vertification_code"
           type="number"
           placeholder="인증 코드"
           required={true}
-          errors={[]}
         />
-        <FormButton loading={false} text="인증하기" />
+        <FormButton text="인증하기" />
       </form>
     </div>
   );

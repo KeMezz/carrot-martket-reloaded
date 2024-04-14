@@ -5,7 +5,7 @@ interface FormInputProps {
   name: string;
   placeholder: string;
   required: boolean;
-  errors: string[];
+  errors?: string[];
 }
 
 export default function FormInput({
@@ -13,7 +13,7 @@ export default function FormInput({
   name,
   placeholder,
   required,
-  errors,
+  errors = [],
 }: FormInputProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -31,7 +31,7 @@ export default function FormInput({
               key={i}
               className="text-red-500 font-medium flex items-center gap-2 text-sm"
             >
-              <ExclamationTriangleIcon className="size-4" />
+              <ExclamationTriangleIcon className="size-4 mt-[0.5px]" />
               {error}
             </span>
           ))}

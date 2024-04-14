@@ -26,27 +26,20 @@ export default function CreateAccount() {
           type="email"
           placeholder="이메일"
           required={true}
-          errors={[]}
         />
         <FormInput
           name="password"
           type="password"
           placeholder="비밀번호"
           required={true}
-          errors={[]}
         />
         <FormInput
           name="confirm_password"
           type="password"
           placeholder="비밀번호 확인"
           required={true}
-          errors={[]}
         />
-        <FormButton
-          loading={false}
-          text="계정 만들기"
-          loadingMessage="계정 생성 중..."
-        />
+        <FormButton text="계정 만들기" loadingMessage="계정 생성 중..." />
       </form>
       <SocialLogin />
     </div>
