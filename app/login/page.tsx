@@ -1,16 +1,15 @@
-"use client";
-
 import FormButton from "@/components/form-btn";
 import FormInput from "@/components/form-input";
 import SocialLogin from "@/components/social-login";
 
 export default function Login() {
-  const onClick = async () => {
-    const response = await fetch("/api/users", {
-      method: "POST",
-      body: JSON.stringify({ username: "nico", password: "1234" }),
-    });
-    console.log(await response.json());
+  // Server Action
+  const handleForm = async (formData: FormData) => {
+    "use server";
+
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    console.log(formData.get("email"), formData.get("password"));
+    console.log("i run in the server!");
   };
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
@@ -20,23 +19,27 @@ export default function Login() {
           가입할 때 사용한 정보를 입력해주세요
         </h2>
       </div>
-      <form className="flex flex-col gap-5">
+      <form method="POST" action={handleForm} className="flex flex-col gap-5">
         <FormInput
+          name="email"
           type="email"
           placeholder="이메일"
           required={true}
           errors={[]}
         />
         <FormInput
+          name="password"
           type="password"
           placeholder="비밀번호"
           required={true}
           errors={[]}
         />
+        <FormButton
+          loading={false}
+          text="로그인"
+          loadingMessage="로그인 하는 중..."
+        />
       </form>
-      <span onClick={onClick}>
-        <FormButton loading={false} text="로그인" />
-      </span>
       <SocialLogin />
     </div>
   );
