@@ -2,9 +2,7 @@
 
 import { z } from "zod";
 
-const passwordRegex = new RegExp(
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/
-);
+const passwordRegex = new RegExp(/^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{10,}$/);
 
 const checkUsername = (username: string) => !username.includes("potato");
 const checkPasswords = ({
@@ -34,10 +32,7 @@ const formSchema = z
     password: z
       .string()
       .min(10, "비밀번호는 최소 10글자 이상이어야 해요")
-      .regex(
-        passwordRegex,
-        "비밀번호는 영문 대소문자, 숫자, 특수문자를 포함해야 해요"
-      ),
+      .regex(passwordRegex, "비밀번호는 영문, 숫자, 특수문자를 포함해야 해요"),
     confirm_password: z
       .string()
       .min(10, "비밀번호는 최소 10글자 이상이어야 해요"),
