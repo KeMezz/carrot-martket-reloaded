@@ -1,7 +1,7 @@
 "use client";
 
-import FormButton from "@/components/form-btn";
-import FormInput from "@/components/form-input";
+import Button from "@/components/button";
+import Input from "@/components/input";
 import SocialLogin from "@/components/social-login";
 import { useFormState } from "react-dom";
 import createAccount from "./action";
@@ -17,35 +17,39 @@ export default function CreateAccount() {
         </h2>
       </div>
       <form method="POST" action={action} className="flex flex-col gap-5">
-        <FormInput
+        <Input
           name="username"
           type="text"
           placeholder="이름"
           required={true}
+          minLength={2}
+          maxLength={15}
           errors={state?.errors.fieldErrors.username}
         />
-        <FormInput
+        <Input
           name="email"
           type="email"
           placeholder="이메일"
           required={true}
           errors={state?.errors.fieldErrors.email}
         />
-        <FormInput
+        <Input
           name="password"
           type="password"
           placeholder="비밀번호"
           required={true}
+          minLength={10}
           errors={state?.errors.fieldErrors.password}
         />
-        <FormInput
+        <Input
           name="confirm_password"
           type="password"
           placeholder="비밀번호 확인"
           required={true}
+          minLength={10}
           errors={state?.errors.fieldErrors.confirm_password}
         />
-        <FormButton text="계정 만들기" loadingMessage="계정 생성 중..." />
+        <Button text="계정 만들기" loadingMessage="계정 생성 중..." />
       </form>
       <SocialLogin />
     </div>

@@ -20,8 +20,8 @@ const formSchema = z
         invalid_type_error: "유효하지 않은 형식입니다",
         required_error: "이름은 필수 입력 사항이에요",
       })
-      .min(3, "이름은 최소 3글자 이상이어야 해요")
-      .max(20, "이름은 최대 20글자 이하여야 해요")
+      .min(2, "이름은 최소 2글자 이상이어야 해요")
+      .max(15, "이름은 최대 15글자 이하여야 해요")
       .toLowerCase()
       .trim()
       .refine(checkUsername, "이름에 'potato'가 포함되어 있어요"),

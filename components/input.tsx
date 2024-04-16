@@ -1,28 +1,22 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
+import { InputHTMLAttributes } from "react";
 
-interface FormInputProps {
-  type: string;
+interface InputProps {
   name: string;
-  placeholder: string;
-  required: boolean;
   errors?: string[];
 }
 
-export default function FormInput({
-  type,
+export default function Input({
   name,
-  placeholder,
-  required,
   errors = [],
-}: FormInputProps) {
+  ...attrs
+}: InputProps & InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="flex flex-col gap-2">
       <input
         className="bg-transparent rounded-md w-full h-10 focus:outline-none ring-2 focus:ring-4 transition ring-neutral-200 focus:ring-orange-500 border-none placeholder:text-neutral-500"
         name={name}
-        type={type}
-        placeholder={placeholder}
-        required={required}
+        {...attrs}
       />
       {errors?.length ? (
         <div className="flex flex-col gap-2">
