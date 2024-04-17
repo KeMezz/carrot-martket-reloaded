@@ -11,9 +11,9 @@ export default function CreateAccount() {
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-black">계정 만들기</h1>
-        <h2 className="font-medium text-xl">
-          당근마켓에서 사용할 정보를 입력할 수 있어요.
+        <h1 className="text-2xl font-bold">계정 만들기</h1>
+        <h2 className="font-medium text-lg">
+          당근마켓에서 사용할 정보를 입력해주세요.
         </h2>
       </div>
       <form method="POST" action={action} className="flex flex-col gap-5">
