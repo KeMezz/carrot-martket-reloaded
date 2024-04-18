@@ -1,8 +1,17 @@
 "use server";
 
+import {
+  EMAIL_ERROR_MESSAGE,
+  PASSWORD_MIN_ERROR_MESSAGE,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_ERROR_MESSAGE,
+  USERNAME_MAX_ERROR_MESSAGE,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_ERROR_MESSAGE,
+  USERNAME_MIN_LENGTH,
+} from "@/lib/constants";
 import { z } from "zod";
-
-const passwordRegex = new RegExp(/^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{10,}$/);
 
 const checkUsername = (username: string) => !username.includes("potato");
 const checkPasswords = ({
@@ -20,22 +29,19 @@ const formSchema = z
         invalid_type_error: "유효하지 않은 형식입니다",
         required_error: "이름은 필수 입력 사항이에요",
       })
-      .min(2, "이름은 최소 2글자 이상이어야 해요")
-      .max(15, "이름은 최대 15글자 이하여야 해요")
+      .min(USERNAME_MIN_LENGTH, USERNAME_MIN_ERROR_MESSAGE)
+      .max(USERNAME_MAX_LENGTH, USERNAME_MAX_ERROR_MESSAGE)
       .toLowerCase()
       .trim()
       .refine(checkUsername, "이름에 'potato'가 포함되어 있어요"),
-    email: z
-      .string()
-      .email({ message: "올바른 형식의 이메일을 입력해주세요" })
-      .toLowerCase(),
+    email: z.string().email({ message: EMAIL_ERROR_MESSAGE }).toLowerCase(),
     password: z
       .string()
-      .min(10, "비밀번호는 최소 10글자 이상이어야 해요")
-      .regex(passwordRegex, "비밀번호는 영문, 숫자, 특수문자를 포함해야 해요"),
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
+      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
     confirm_password: z
       .string()
-      .min(10, "비밀번호는 최소 10글자 이상이어야 해요"),
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
   })
   .refine(checkPasswords, {
     message: "비밀번호가 일치하지 않아요",

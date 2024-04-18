@@ -1,7 +1,32 @@
 "use server";
 
-export async function handleForm(prevState: any, formData: FormData) {
-  return {
-    errors: ["잘못된 계정 정보입니다.", "비밀번호가 너무 짧습니다."],
+import {
+  EMAIL_ERROR_MESSAGE,
+  PASSWORD_MIN_ERROR_MESSAGE,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_ERROR_MESSAGE,
+} from "@/lib/constants";
+import { z } from "zod";
+
+const formSchema = z.object({
+  email: z.string().email({ message: EMAIL_ERROR_MESSAGE }).toLowerCase(),
+  password: z
+    .string()
+    .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
+    .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
+});
+
+export async function login(prevState: any, formData: FormData) {
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
   };
+  const result = formSchema.safeParse(data);
+
+  if (!result.success) {
+    return result.error.flatten();
+  } else {
+    console.log(result.data);
+  }
 }

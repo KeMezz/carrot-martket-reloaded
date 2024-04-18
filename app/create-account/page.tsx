@@ -5,6 +5,11 @@ import Input from "@/components/input";
 import SocialLogin from "@/components/social-login";
 import { useFormState } from "react-dom";
 import createAccount from "./action";
+import {
+  PASSWORD_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "@/lib/constants";
 
 export default function CreateAccount() {
   const [state, action] = useFormState(createAccount, null);
@@ -22,8 +27,8 @@ export default function CreateAccount() {
           type="text"
           placeholder="이름"
           required={true}
-          minLength={2}
-          maxLength={15}
+          minLength={USERNAME_MIN_LENGTH}
+          maxLength={USERNAME_MAX_LENGTH}
           errors={state?.errors.fieldErrors.username}
         />
         <Input
@@ -38,7 +43,7 @@ export default function CreateAccount() {
           type="password"
           placeholder="비밀번호"
           required={true}
-          minLength={10}
+          minLength={PASSWORD_MIN_LENGTH}
           errors={state?.errors.fieldErrors.password}
         />
         <Input
@@ -46,7 +51,7 @@ export default function CreateAccount() {
           type="password"
           placeholder="비밀번호 확인"
           required={true}
-          minLength={10}
+          minLength={PASSWORD_MIN_LENGTH}
           errors={state?.errors.fieldErrors.confirm_password}
         />
         <Button text="계정 만들기" loadingMessage="계정 생성 중..." />
