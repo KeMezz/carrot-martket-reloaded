@@ -53,6 +53,8 @@ export default async function createAccount(
     confirm_password: formData.get("confirm_password"),
   };
 
+  // By using safeParse, we can get the errors in a flattened format
+  // if we not use safeParse, we have to use try-catch block to get the errors
   const result = formSchema.safeParse(data);
   if (!result.success) {
     return { errors: result.error.flatten() };
