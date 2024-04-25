@@ -7,6 +7,7 @@ import { useFormState } from "react-dom";
 
 const initialState = {
   vertification_token: false,
+  error: undefined,
 };
 
 export default function SMSLogin() {
@@ -20,14 +21,9 @@ export default function SMSLogin() {
         </h2>
       </div>
       <form className="flex flex-col gap-5" action={action}>
-        <Input
-          name="phone"
-          type="text"
-          placeholder="휴대폰 번호"
-          required={true}
-        />
         {state?.vertification_token ? (
           <Input
+            key="vertification_token"
             name="vertification_token"
             type="number"
             placeholder="인증 코드"
@@ -35,8 +31,19 @@ export default function SMSLogin() {
             min={100000}
             max={999999}
           />
-        ) : null}
-        <Button text="인증하기" />
+        ) : (
+          <Input
+            key="phone"
+            name="phone"
+            type="text"
+            placeholder="휴대폰 번호"
+            errors={state?.error?.formErrors}
+            required={true}
+          />
+        )}
+        <Button
+          text={state.vertification_token ? "인증하기" : "인증 문자 보내기"}
+        />
       </form>
     </div>
   );

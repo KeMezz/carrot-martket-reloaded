@@ -12,3 +12,4 @@ export const PASSWORD_REGEX_ERROR_MESSAGE = `비밀번호는 영문, 숫자, 특
 export const USERNAME_MIN_ERROR_MESSAGE = `이름은 최소 ${USERNAME_MIN_LENGTH}글자 이상이어야 해요`;
 export const USERNAME_MAX_ERROR_MESSAGE = `이름은 최대 ${USERNAME_MAX_LENGTH}글자 이하여야 해요`;
 export const EMAIL_ERROR_MESSAGE = "올바른 형식의 이메일을 입력해주세요";
+export const PHONE_ERROR_MESSAGE = "올바른 형식의 전화번호를 입력해주세요";
