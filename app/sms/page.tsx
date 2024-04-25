@@ -5,8 +5,12 @@ import Input from "@/components/input";
 import { smsLogin } from "./actions";
 import { useFormState } from "react-dom";
 
+const initialState = {
+  vertification_token: false,
+};
+
 export default function SMSLogin() {
-  const [state, action] = useFormState(smsLogin, null);
+  const [state, action] = useFormState(smsLogin, initialState);
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2">
@@ -22,14 +26,16 @@ export default function SMSLogin() {
           placeholder="휴대폰 번호"
           required={true}
         />
-        <Input
-          name="vertification_token"
-          type="number"
-          placeholder="인증 코드"
-          required={true}
-          min={100000}
-          max={999999}
-        />
+        {state?.vertification_token ? (
+          <Input
+            name="vertification_token"
+            type="number"
+            placeholder="인증 코드"
+            required={true}
+            min={100000}
+            max={999999}
+          />
+        ) : null}
         <Button text="인증하기" />
       </form>
     </div>
