@@ -12,6 +12,7 @@ const initialState = {
 
 export default function SMSLogin() {
   const [state, action] = useFormState(smsLogin, initialState);
+
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2">
@@ -27,6 +28,7 @@ export default function SMSLogin() {
             name="vertification_token"
             type="number"
             placeholder="인증 코드"
+            errors={state.error?.formErrors}
             required={true}
             min={100000}
             max={999999}
