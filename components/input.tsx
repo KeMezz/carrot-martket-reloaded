@@ -1,14 +1,16 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, RefObject } from "react";
 
 interface InputProps {
   name: string;
   errors?: string[];
+  inputRef?: RefObject<HTMLInputElement>;
 }
 
 export default function Input({
   name,
   errors = [],
+  inputRef,
   ...attrs
 }: InputProps & InputHTMLAttributes<HTMLInputElement>) {
   return (
@@ -17,6 +19,7 @@ export default function Input({
       <input
         className="bg-transparent rounded-md w-full h-10 focus:outline-none ring-2 focus:ring-4 transition ring-neutral-200 focus:ring-orange-500 border-none placeholder:text-neutral-500"
         name={name}
+        ref={inputRef}
         {...attrs}
       />
       {errors?.length ? (
