@@ -11,6 +11,7 @@ import {
   USERNAME_MIN_ERROR_MESSAGE,
   USERNAME_MIN_LENGTH,
 } from "@/lib/constants";
+import db from "@/lib/db";
 import { z } from "zod";
 
 const checkUsername = (username: string) => !username.includes("potato");
@@ -35,10 +36,9 @@ const formSchema = z
       .trim()
       .refine(checkUsername, "이름에 'potato'가 포함되어 있어요"),
     email: z.string().email({ message: EMAIL_ERROR_MESSAGE }).toLowerCase(),
-    password: z
-      .string()
-      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
-      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
+    password: z.string(),
+    // .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
+    // .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
     confirm_password: z
       .string()
       .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
@@ -65,6 +65,38 @@ export default async function createAccount(
   if (!result.success) {
     return { errors: result.error.flatten() };
   } else {
-    console.log(result.data);
+    // 유저명이 이미 존재하는지 확인한다
+    const user = await db.user.findUnique({
+      where: {
+        username: result.data.username,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      // 에러 메시지를 보여준다
+    }
+
+    // 이메일이 이미 존재하는지 확인한다
+    const userEmail = await db.user.findUnique({
+      where: {
+        email: result.data.email,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (userEmail) {
+      // 에러 메시지를 보여준다
+    }
+
+    // 패스워드를 해싱한패
+
+    // 데이터베이스에 유저를 추가한터
+
+    // 유저를 로그인 시킨다
+
+    // 유저를 /home 페이지로 리다이렉트 시킨다
   }
 }
