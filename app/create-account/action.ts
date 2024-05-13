@@ -29,25 +29,25 @@ const checkPasswords = ({
 const checkUsername = async (username: string) => {
   const user = await db.user.findUnique({
     where: {
-      username: username,
+      username,
     },
     select: {
       id: true,
     },
   });
-  return !!user;
+  return !user;
 };
 
 const checkUserEmail = async (email: string) => {
   const user = await db.user.findUnique({
     where: {
-      email: email,
+      email,
     },
     select: {
       id: true,
     },
   });
-  return !!user;
+  return !user;
 };
 
 const formSchema = z
@@ -95,6 +95,7 @@ export default async function createAccount(
   if (!result.success) {
     return { errors: result.error.flatten() };
   } else {
+    console.log(result);
     // 패스워드를 해싱한다
     // 데이터베이스에 유저를 추가한다
     // 유저를 로그인 시킨다
