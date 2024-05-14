@@ -17,6 +17,7 @@ import {
 } from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 
 const checkPasswords = ({
   password,
@@ -96,8 +97,16 @@ export default async function createAccount(
     return { errors: result.error.flatten() };
   } else {
     console.log(result);
-    // 패스워드를 해싱한다
-    // 데이터베이스에 유저를 추가한다
+    const hashedPassword = await bcrypt.hash(result.data.password, 12);
+    const user = await db.user.create({
+      data: {
+        username: result.data.username,
+        email: result.data.email,
+        password: hashedPassword,
+      },
+    });
+    console.log(user);
+
     // 유저를 로그인 시킨다
     // 유저를 /home 페이지로 리다이렉트 시킨다
   }
