@@ -104,6 +104,9 @@ export default async function createAccount(
         email: result.data.email,
         password: hashedPassword,
       },
+      select: {
+        id: true,
+      },
     });
     console.log(user);
 
