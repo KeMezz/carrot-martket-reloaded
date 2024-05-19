@@ -18,6 +18,9 @@ import {
 import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const checkPasswords = ({
   password,
@@ -81,7 +84,7 @@ const formSchema = z
 
 export default async function createAccount(
   prevState: any,
-  formData: FormData
+  formData: FormData,
 ) {
   const data = {
     username: formData.get("username"),
@@ -108,9 +111,18 @@ export default async function createAccount(
         id: true,
       },
     });
-    console.log(user);
 
     // 유저를 로그인 시킨다
+    const session = await getIronSession(cookies(), {
+      cookieName: "user",
+      password: process.env.COOKIE_PASSWORD!,
+    });
+
+    // @ts-ignore
+    session.id = user.id;
+    await session.save();
+
     // 유저를 /home 페이지로 리다이렉트 시킨다
+    redirect("/profile");
   }
 }
