@@ -71,11 +71,13 @@ const formSchema = z
       .email({ message: EMAIL_ERROR_MESSAGE })
       .toLowerCase()
       .refine(checkUserEmail, EMAIL_ALREADY_EXISTS_MESSAGE),
-    password: z.string(),
-    // .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
-    // .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
-    confirm_password: z.string(),
-    // .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
+    password: z
+      .string()
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
+      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
+    confirm_password: z
+      .string()
+      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
   })
   .refine(checkPasswords, {
     message: "비밀번호가 일치하지 않아요",
@@ -95,7 +97,7 @@ export default async function createAccount(
 
   // By using safeParse, we can get the errors in a flattened format
   // if we not use safeParse, we have to use try-catch block to get the errors
-  const result = await formSchema.safeParseAsync(data);
+  const result = await formSchema.spa(data);
   if (!result.success) {
     return { errors: result.error.flatten() };
   } else {
