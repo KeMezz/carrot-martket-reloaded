@@ -1,7 +1,7 @@
 // Constants for validation rules
 export const PASSWORD_MIN_LENGTH = 10;
 export const PASSWORD_REGEX = new RegExp(
-  /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{10,}$/
+  /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{10,}$/,
 );
 export const USERNAME_MIN_LENGTH = 2;
 export const USERNAME_MAX_LENGTH = 15;
@@ -17,3 +17,4 @@ export const USERNAME_ALREADY_EXISTS_MESSAGE = `이미 사용 중인 이름이�
 export const EMAIL_ALREADY_EXISTS_MESSAGE = `이미 사용 중인 이메일이에요`;
 export const EMAIL_ERROR_MESSAGE = "올바른 형식의 이메일을 입력해주세요";
 export const PHONE_ERROR_MESSAGE = "올바른 형식의 전화번호를 입력해주세요";
+export const INVALID_USER_MESSAGE = `사용자 정보가 올바르지 않아요`;
