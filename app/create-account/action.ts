@@ -21,6 +21,7 @@ import bcrypt from "bcrypt";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import getSession from "@/lib/session";
 
 const checkPasswords = ({
   password,
@@ -115,12 +116,7 @@ export default async function createAccount(
     });
 
     // 유저를 로그인 시킨다
-    const session = await getIronSession(cookies(), {
-      cookieName: "user",
-      password: process.env.COOKIE_PASSWORD!,
-    });
-
-    // @ts-ignore
+    const session = await getSession();
     session.id = user.id;
     await session.save();
 
