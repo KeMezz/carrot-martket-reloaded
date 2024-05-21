@@ -81,8 +81,8 @@ const formSchema = z
     if (user) {
       ctx.addIssue({
         code: "custom",
-        message: USERNAME_ALREADY_EXISTS_MESSAGE,
-        path: ["username"],
+        message: EMAIL_ALREADY_EXISTS_MESSAGE,
+        path: ["email"],
         fatal: true,
       });
       return z.NEVER;
