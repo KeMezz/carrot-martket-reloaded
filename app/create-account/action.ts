@@ -6,6 +6,7 @@ import {
   INVALID_TYPE_ERROR_MESSAGE,
   PASSWORD_MIN_ERROR_MESSAGE,
   PASSWORD_MIN_LENGTH,
+  PASSWORD_NOT_MATCH_MESSAGE,
   PASSWORD_REGEX,
   PASSWORD_REGEX_ERROR_MESSAGE,
   REQUIRED_ERROR_MESSAGE,
@@ -18,8 +19,6 @@ import {
 import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import getSession from "@/lib/session";
 
@@ -31,30 +30,6 @@ const checkPasswords = ({
   confirm_password: string;
 }) => password === confirm_password;
 
-const checkUsername = async (username: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      username,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return !user;
-};
-
-const checkUserEmail = async (email: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      email,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return !user;
-};
-
 const formSchema = z
   .object({
     username: z
@@ -65,13 +40,8 @@ const formSchema = z
       .min(USERNAME_MIN_LENGTH, USERNAME_MIN_ERROR_MESSAGE)
       .max(USERNAME_MAX_LENGTH, USERNAME_MAX_ERROR_MESSAGE)
       .toLowerCase()
-      .trim()
-      .refine(checkUsername, USERNAME_ALREADY_EXISTS_MESSAGE),
-    email: z
-      .string()
-      .email({ message: EMAIL_ERROR_MESSAGE })
-      .toLowerCase()
-      .refine(checkUserEmail, EMAIL_ALREADY_EXISTS_MESSAGE),
+      .trim(),
+    email: z.string().email({ message: EMAIL_ERROR_MESSAGE }).toLowerCase(),
     password: z
       .string()
       .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
@@ -80,8 +50,46 @@ const formSchema = z
       .string()
       .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
   })
+  .superRefine(async ({ username }, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: "custom",
+        message: USERNAME_ALREADY_EXISTS_MESSAGE,
+        path: ["username"],
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+  })
+  .superRefine(async ({ email }, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: "custom",
+        message: USERNAME_ALREADY_EXISTS_MESSAGE,
+        path: ["username"],
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+  })
   .refine(checkPasswords, {
-    message: "비밀번호가 일치하지 않아요",
+    message: PASSWORD_NOT_MATCH_MESSAGE,
     path: ["confirm_password"],
   });
 
