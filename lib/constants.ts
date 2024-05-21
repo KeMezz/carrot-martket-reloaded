@@ -11,6 +11,7 @@ export const INVALID_TYPE_ERROR_MESSAGE = "유효하지 않은 형식입니다";
 export const REQUIRED_ERROR_MESSAGE = "필수 입력 사항이에요";
 export const PASSWORD_MIN_ERROR_MESSAGE = `비밀번호는 최소 ${PASSWORD_MIN_LENGTH}글자 이상이어야 해요`;
 export const PASSWORD_REGEX_ERROR_MESSAGE = `비밀번호는 영문, 숫자, 특수문자를 포함해야 해요`;
+export const PASSWORD_NOT_MATCH_MESSAGE = `비밀번호가 일치하지 않아요`;
 export const USERNAME_MIN_ERROR_MESSAGE = `이름은 최소 ${USERNAME_MIN_LENGTH}글자 이상이어야 해요`;
 export const USERNAME_MAX_ERROR_MESSAGE = `이름은 최대 ${USERNAME_MAX_LENGTH}글자 이하여야 해요`;
 export const USERNAME_ALREADY_EXISTS_MESSAGE = `이미 사용 중인 이름이에요`;
