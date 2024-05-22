@@ -49,7 +49,6 @@ export async function login(prevState: any, formData: FormData) {
   if (!result.success) {
     return result.error.flatten();
   } else {
-    // 유저가 존재하면 패스워드를 해싱한다
     const user = await db.user.findUnique({
       where: {
         email: result.data.email,
@@ -64,10 +63,12 @@ export async function login(prevState: any, formData: FormData) {
     if (ok) {
       const session = await getSession();
       session.id = user!.id;
+      await session.save();
       redirect("/profile");
     } else {
       return {
         fieldErrors: {
+          email: [INVALID_USER_MESSAGE],
           password: [INVALID_USER_MESSAGE],
         },
       };
