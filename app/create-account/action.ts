@@ -95,7 +95,7 @@ const formSchema = z
 
 export default async function createAccount(
   prevState: any,
-  formData: FormData,
+  formData: FormData
 ) {
   const data = {
     username: formData.get("username"),
