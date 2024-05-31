@@ -73,7 +73,5 @@ export async function login(_: any, formData: FormData) {
         },
       };
     }
-
-    // 일치하는 경우 유저를 로그인시킨다
   }
 }
