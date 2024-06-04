@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import getSession from "@/lib/session";
+import getSession, { loginByUserId } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
@@ -48,10 +48,7 @@ export async function GET(request: NextRequest) {
     },
   });
   if (user) {
-    // TODO: 로그인 처리를 별도의 함수로 관리하기
-    const session = await getSession();
-    session.id = user.id;
-    await session.save();
+    await loginByUserId(user.id);
     return redirect("/profile");
   }
   // TODO: 깃허브 로그인 처리 전에 이미 존재하는 유저명이 있는지 확인하기
@@ -65,8 +62,6 @@ export async function GET(request: NextRequest) {
       id: true,
     },
   });
-  const session = await getSession();
-  session.id = newUser.id;
-  await session.save();
+  await loginByUserId(newUser.id);
   return redirect("/profile");
 }
