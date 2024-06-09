@@ -15,9 +15,7 @@ const checkPasswords = ({
   confirm_password: string;
 }) => password === confirm_password;
 
-const checkUsername = (username: string) => {
-  return !username.includes("-gh");
-};
+const checkUsername = (username: string) => !username.endsWith("-gh");
 
 const formSchema = z
   .object({
