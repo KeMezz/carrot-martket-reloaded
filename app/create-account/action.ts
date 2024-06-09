@@ -1,21 +1,6 @@
 "use server";
 
-import {
-  EMAIL_ALREADY_EXISTS_MESSAGE,
-  EMAIL_ERROR_MESSAGE,
-  INVALID_TYPE_ERROR_MESSAGE,
-  PASSWORD_MIN_ERROR_MESSAGE,
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_NOT_MATCH_MESSAGE,
-  PASSWORD_REGEX,
-  PASSWORD_REGEX_ERROR_MESSAGE,
-  REQUIRED_ERROR_MESSAGE,
-  USERNAME_ALREADY_EXISTS_MESSAGE,
-  USERNAME_MAX_ERROR_MESSAGE,
-  USERNAME_MAX_LENGTH,
-  USERNAME_MIN_ERROR_MESSAGE,
-  USERNAME_MIN_LENGTH,
-} from "@/lib/constants";
+import * as msgs from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -30,25 +15,33 @@ const checkPasswords = ({
   confirm_password: string;
 }) => password === confirm_password;
 
+const checkUsername = (username: string) => {
+  return !username.includes("-gh");
+};
+
 const formSchema = z
   .object({
     username: z
       .string({
-        invalid_type_error: INVALID_TYPE_ERROR_MESSAGE,
-        required_error: REQUIRED_ERROR_MESSAGE,
+        invalid_type_error: msgs.INVALID_TYPE_ERROR_MESSAGE,
+        required_error: msgs.REQUIRED_ERROR_MESSAGE,
       })
-      .min(USERNAME_MIN_LENGTH, USERNAME_MIN_ERROR_MESSAGE)
-      .max(USERNAME_MAX_LENGTH, USERNAME_MAX_ERROR_MESSAGE)
+      .min(msgs.USERNAME_MIN_LENGTH, msgs.USERNAME_MIN_ERROR_MESSAGE)
+      .max(msgs.USERNAME_MAX_LENGTH, msgs.USERNAME_MAX_ERROR_MESSAGE)
       .toLowerCase()
-      .trim(),
-    email: z.string().email({ message: EMAIL_ERROR_MESSAGE }).toLowerCase(),
+      .trim()
+      .refine(checkUsername, msgs.USERNAME_GITHUB_ERROR_MESSAGE),
+    email: z
+      .string()
+      .email({ message: msgs.EMAIL_ERROR_MESSAGE })
+      .toLowerCase(),
     password: z
       .string()
-      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
-      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR_MESSAGE),
+      .min(msgs.PASSWORD_MIN_LENGTH, msgs.PASSWORD_MIN_ERROR_MESSAGE)
+      .regex(msgs.PASSWORD_REGEX, msgs.PASSWORD_REGEX_ERROR_MESSAGE),
     confirm_password: z
       .string()
-      .min(PASSWORD_MIN_LENGTH, PASSWORD_MIN_ERROR_MESSAGE),
+      .min(msgs.PASSWORD_MIN_LENGTH, msgs.PASSWORD_MIN_ERROR_MESSAGE),
   })
   .superRefine(async ({ username }, ctx) => {
     const user = await db.user.findUnique({
@@ -62,7 +55,7 @@ const formSchema = z
     if (user) {
       ctx.addIssue({
         code: "custom",
-        message: USERNAME_ALREADY_EXISTS_MESSAGE,
+        message: msgs.USERNAME_ALREADY_EXISTS_MESSAGE,
         path: ["username"],
         fatal: true,
       });
@@ -81,7 +74,7 @@ const formSchema = z
     if (user) {
       ctx.addIssue({
         code: "custom",
-        message: EMAIL_ALREADY_EXISTS_MESSAGE,
+        message: msgs.EMAIL_ALREADY_EXISTS_MESSAGE,
         path: ["email"],
         fatal: true,
       });
@@ -89,7 +82,7 @@ const formSchema = z
     }
   })
   .refine(checkPasswords, {
-    message: PASSWORD_NOT_MATCH_MESSAGE,
+    message: msgs.PASSWORD_NOT_MATCH_MESSAGE,
     path: ["confirm_password"],
   });
 
