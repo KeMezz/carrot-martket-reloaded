@@ -74,7 +74,6 @@ export async function GET(request: NextRequest) {
 
   const { id, avatar_url, login, email } = await getGithubProfile(access_token);
 
-  // TODO: 깃허브 로그인 처리 전에 이미 존재하는 유저명이 있는지 확인하기
   const user = await db.user.findUnique({
     where: {
       github_id: id + "",
