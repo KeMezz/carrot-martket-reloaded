@@ -4,6 +4,7 @@ import { z } from "zod";
 import validator from "validator";
 import { redirect } from "next/navigation";
 import { PHONE_ERROR_MESSAGE } from "@/lib/constants";
+import db from "@/lib/db";
 
 const phoneSchema = z
   .string()
@@ -30,6 +31,16 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         error: result.error.flatten(),
       };
     } else {
+      await db.sMSToken.deleteMany({
+        where: {
+          user: {
+            phone: result.data,
+          },
+        },
+      });
+      // delete previous token
+      // create token
+      // send the token using twilio
       return {
         vertification_token: true,
       };
