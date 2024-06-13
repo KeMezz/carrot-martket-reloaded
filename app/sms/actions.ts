@@ -5,6 +5,7 @@ import validator from "validator";
 import { redirect } from "next/navigation";
 import { PHONE_ERROR_MESSAGE } from "@/lib/constants";
 import db from "@/lib/db";
+import crypto from "crypto";
 
 const phoneSchema = z
   .string()
@@ -20,6 +21,24 @@ interface ActionState {
   vertification_token: boolean;
 }
 
+async function getToken() {
+  const token = crypto.randomInt(100000, 999999).toString();
+  const exists = await db.sMSToken.findUnique({
+    where: {
+      token,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (exists) {
+    return createToken();
+  } else {
+    return token;
+  }
+}
+
 export async function smsLogin(prevState: ActionState, formData: FormData) {
   const phone = formData.get("phone");
   const vertification_token = formData.get("vertification_token");
@@ -31,6 +50,7 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         error: result.error.flatten(),
       };
     } else {
+      // delete every previous token
       await db.sMSToken.deleteMany({
         where: {
           user: {
@@ -38,8 +58,26 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
           },
         },
       });
-      // delete previous token
+
       // create token
+      const token = await getToken();
+      await db.sMSToken.create({
+        data: {
+          token,
+          user: {
+            connectOrCreate: {
+              where: {
+                phone: result.data,
+              },
+              create: {
+                username: crypto.randomBytes(10).toString("hex"),
+                phone: result.data,
+              },
+            },
+          },
+        },
+      });
+
       // send the token using twilio
       return {
         vertification_token: true,
