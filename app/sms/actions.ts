@@ -21,6 +21,10 @@ interface ActionState {
   vertification_token: boolean;
 }
 
+/**
+ * 새로운 6자리 토큰을 생성합니다.
+ * @returns 새로운 6자리 토큰
+ */
 async function getToken() {
   const token = crypto.randomInt(100000, 999999).toString();
   const exists = await db.sMSToken.findUnique({
@@ -31,9 +35,8 @@ async function getToken() {
       id: true,
     },
   });
-
   if (exists) {
-    return createToken();
+    return getToken();
   } else {
     return token;
   }
@@ -59,18 +62,20 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         },
       });
 
-      // create token
+      // create a new token and save it to the database
       const token = await getToken();
       await db.sMSToken.create({
         data: {
           token,
           user: {
             connectOrCreate: {
+              // if the user exists, connect to the user
               where: {
                 phone: result.data,
               },
+              // if the user does not exist, create a new user
               create: {
-                username: crypto.randomBytes(10).toString("hex"),
+                username: crypto.randomBytes(10).toString("hex"), // random username
                 phone: result.data,
               },
             },
