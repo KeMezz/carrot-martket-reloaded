@@ -76,6 +76,7 @@ async function getToken() {
  */
 export async function smsLogin(prevState: ActionState, formData: FormData) {
   const phone = formData.get("phone");
+  // TODO: 휴대폰 번호가 실존하는지 검증하고, 존재하지 않는 번호라면 에러를 반환합니다.
   const vertification_token = formData.get("vertification_token");
   if (!prevState.vertification_token) {
     const result = phoneSchema.safeParse(phone);
@@ -139,6 +140,8 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         error: result.error.flatten(),
       };
     } else {
+      // TODO: 토큰을 검증할 때, 전화번호도 함께 검증하여 일치하지 않는 경우 에러를 반환합니다.
+
       // get the userId of token
       const token = await db.sMSToken.findUnique({
         where: {
