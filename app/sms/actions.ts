@@ -1,5 +1,6 @@
 "use server";
 
+import twilio from "twilio";
 import { z } from "zod";
 import validator from "validator";
 import { redirect } from "next/navigation";
@@ -112,6 +113,17 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
             },
           },
         },
+      });
+
+      const twilioClient = twilio(
+        process.env.TWILIO_SID,
+        process.env.TWILIO_TOKEN
+      );
+      await twilioClient.messages.create({
+        body: `Your verification code is ${token}`,
+        from: process.env.TWILIO_PHONE!,
+        // to: result.data,
+        to: process.env.MY_PHONE!,
       });
 
       // send the token using twilio
