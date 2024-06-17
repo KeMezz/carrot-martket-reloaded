@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { PHONE_ERROR_MESSAGE } from "@/lib/constants";
 import db from "@/lib/db";
 import crypto from "crypto";
+import { loginByUserId } from "@/lib/session";
 
 const phoneSchema = z
   .string()
@@ -15,7 +16,31 @@ const phoneSchema = z
     PHONE_ERROR_MESSAGE
   );
 
-const tokenSchema = z.coerce.number().min(100000).max(999999);
+/**
+ * 토큰이 존재하는지 확인합니다.
+ * @param token 유저가 입력한 토큰
+ * @returns 토큰이 존재하는지 여부
+ */
+async function tokenExists(token: number) {
+  const exists = await db.sMSToken.findUnique({
+    where: {
+      token: token.toString(),
+    },
+    select: {
+      id: true,
+    },
+  });
+  return Boolean(exists);
+}
+
+/**
+ * 토큰을 검증합니다.
+ */
+const tokenSchema = z.coerce
+  .number()
+  .min(100000)
+  .max(999999)
+  .refine(tokenExists, "토큰이 올바르지 않습니다.");
 
 interface ActionState {
   vertification_token: boolean;
@@ -42,6 +67,12 @@ async function getToken() {
   }
 }
 
+/**
+ * Performs SMS login based on the provided form data.
+ * @param prevState The previous state of the action.
+ * @param formData The form data containing the phone and verification token.
+ * @returns The updated state of the action.
+ */
 export async function smsLogin(prevState: ActionState, formData: FormData) {
   const phone = formData.get("phone");
   const vertification_token = formData.get("vertification_token");
@@ -89,14 +120,36 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
       };
     }
   } else {
-    const result = tokenSchema.safeParse(vertification_token);
+    const result = await tokenSchema.spa(vertification_token);
     if (!result.success) {
       return {
         vertification_token: true,
         error: result.error.flatten(),
       };
     } else {
-      redirect("/");
+      // get the userId of token
+      const token = await db.sMSToken.findUnique({
+        where: {
+          token: result.data.toString(),
+        },
+        select: {
+          id: true,
+          userId: true,
+        },
+      });
+
+      // log the user in and delete the token
+      if (token) {
+        await loginByUserId(token.userId);
+        await db.sMSToken.delete({
+          where: {
+            id: token.id,
+          },
+        });
+      }
+
+      // redirect to the homepage
+      redirect("/profile");
     }
   }
 }
