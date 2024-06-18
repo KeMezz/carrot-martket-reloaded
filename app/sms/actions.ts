@@ -48,27 +48,6 @@ interface ActionState {
 }
 
 /**
- * 새로운 6자리 토큰을 생성합니다.
- * @returns 새로운 6자리 토큰
- */
-async function getToken() {
-  const token = crypto.randomInt(100000, 999999).toString();
-  const exists = await db.sMSToken.findUnique({
-    where: {
-      token,
-    },
-    select: {
-      id: true,
-    },
-  });
-  if (exists) {
-    return getToken();
-  } else {
-    return token;
-  }
-}
-
-/**
  * Performs SMS login based on the provided form data.
  * @param prevState The previous state of the action.
  * @param formData The form data containing the phone and verification token.
@@ -78,14 +57,7 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
   const phone = formData.get("phone");
   const vertification_token = formData.get("vertification_token");
 
-  const phoneExists = await db.user.findFirst({
-    where: {
-      phone: phone as string,
-    },
-    select: {
-      id: true,
-    },
-  });
+  const phoneExists = await checkPhoneExists(phone);
   if (!phoneExists) {
     return {
       vertification_token: false,
@@ -96,86 +68,37 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
   }
 
   if (!prevState.vertification_token) {
-    const result = phoneSchema.safeParse(phone);
+    const result = validatePhone(phone);
     if (!result.success) {
       return {
         vertification_token: false,
         error: result.error.flatten(),
       };
     } else {
-      // delete every previous token
-      await db.sMSToken.deleteMany({
-        where: {
-          user: {
-            phone: result.data,
-          },
-        },
-      });
+      await deletePreviousTokens(result.data);
 
-      // create a new token and save it to the database
-      const token = await getToken();
-      await db.sMSToken.create({
-        data: {
-          token,
-          user: {
-            connectOrCreate: {
-              // if the user exists, connect to the user
-              where: {
-                phone: result.data,
-              },
-              // if the user does not exist, create a new user
-              create: {
-                username: crypto.randomBytes(10).toString("hex"), // random username
-                phone: result.data,
-              },
-            },
-          },
-        },
-      });
+      const token = await generateToken();
+      await saveToken(token, result.data);
 
-      const twilioClient = twilio(
-        process.env.TWILIO_SID,
-        process.env.TWILIO_TOKEN
-      );
-      await twilioClient.messages.create({
-        body: `Your verification code is ${token}`,
-        from: process.env.TWILIO_PHONE!,
-        // to: result.data,
-        to: process.env.MY_PHONE!,
-      });
+      await sendVerificationCode(token, result.data);
 
-      // send the token using twilio
       return {
         vertification_token: true,
       };
     }
   } else {
-    const result = await tokenSchema.spa(vertification_token);
+    const result = await validateToken(vertification_token);
     if (!result.success) {
       return {
         vertification_token: true,
         error: result.error.flatten(),
       };
     } else {
-      // get the userId of token
-      const token = await db.sMSToken.findUnique({
-        where: {
-          token: result.data.toString(),
-        },
-        select: {
-          id: true,
-          userId: true,
-        },
-      });
-      const phoneMatches = await db.user.findFirst({
-        where: {
-          id: token?.userId,
-          phone: phone as string,
-        },
-        select: {
-          id: true,
-        },
-      });
+      const token = await getTokenById(result.data.toString());
+      const phoneMatches = await checkPhoneMatches(
+        token?.userId!,
+        phone as string
+      );
       if (!phoneMatches) {
         return {
           vertification_token: true,
@@ -185,18 +108,136 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         };
       }
 
-      // log the user in and delete the token
-      if (token) {
-        await loginByUserId(token.userId);
-        await db.sMSToken.delete({
-          where: {
-            id: token.id,
-          },
-        });
-      }
+      await loginUserAndDeleteToken(token);
 
-      // redirect to the homepage
       redirect("/profile");
     }
+  }
+}
+
+async function checkPhoneExists(
+  phone: FormDataEntryValue | null
+): Promise<boolean> {
+  const phoneExists = await db.user.findFirst({
+    where: {
+      phone: phone as string,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return Boolean(phoneExists);
+}
+
+function validatePhone(
+  phone: FormDataEntryValue | null
+): z.SafeParseReturnType<string, string> {
+  return phoneSchema.safeParse(phone);
+}
+
+async function deletePreviousTokens(phone: string): Promise<void> {
+  await db.sMSToken.deleteMany({
+    where: {
+      user: {
+        phone,
+      },
+    },
+  });
+}
+
+async function generateToken(): Promise<string> {
+  const token = crypto.randomInt(100000, 999999).toString();
+  const exists = await db.sMSToken.findUnique({
+    where: {
+      token,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (exists) {
+    return generateToken();
+  } else {
+    return token;
+  }
+}
+
+async function saveToken(token: string, phone: string): Promise<void> {
+  await db.sMSToken.create({
+    data: {
+      token,
+      user: {
+        connectOrCreate: {
+          where: {
+            phone,
+          },
+          create: {
+            username: crypto.randomBytes(10).toString("hex"),
+            phone,
+          },
+        },
+      },
+    },
+  });
+}
+
+async function sendVerificationCode(
+  token: string,
+  phone: string
+): Promise<void> {
+  const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
+  await twilioClient.messages.create({
+    body: `Your verification code is ${token}`,
+    from: process.env.TWILIO_PHONE!,
+    to: process.env.MY_PHONE!,
+  });
+}
+
+async function validateToken(
+  token: FormDataEntryValue | null
+): Promise<z.SafeParseReturnType<number, number>> {
+  return tokenSchema.safeParse(token);
+}
+
+async function getTokenById(
+  token: string
+): Promise<{ id: number; userId: number } | null> {
+  return db.sMSToken.findUnique({
+    where: {
+      token,
+    },
+    select: {
+      id: true,
+      userId: true,
+    },
+  });
+}
+
+async function checkPhoneMatches(
+  userId: number | null,
+  phone: string
+): Promise<boolean> {
+  const phoneMatches = await db.user.findFirst({
+    where: {
+      id: userId!,
+      phone,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return Boolean(phoneMatches);
+}
+
+async function loginUserAndDeleteToken(
+  token: { id: number; userId: number } | null
+): Promise<void> {
+  if (token) {
+    await loginByUserId(token.userId);
+    await db.sMSToken.delete({
+      where: {
+        id: token.id,
+      },
+    });
   }
 }
