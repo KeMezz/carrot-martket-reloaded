@@ -19,4 +19,5 @@ export const USERNAME_ALREADY_EXISTS_MESSAGE = `이미 사용 중인 이름이�
 export const EMAIL_ALREADY_EXISTS_MESSAGE = `이미 사용 중인 이메일이에요`;
 export const EMAIL_ERROR_MESSAGE = "올바른 형식의 이메일을 입력해주세요";
 export const PHONE_ERROR_MESSAGE = "올바른 형식의 전화번호를 입력해주세요";
+export const PHONE_NOT_EXISTS_MESSAGE = "존재하지 않는 전화번호에요";
 export const INVALID_USER_MESSAGE = `사용자 정보가 올바르지 않아요`;

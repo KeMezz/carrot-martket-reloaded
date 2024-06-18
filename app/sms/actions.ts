@@ -76,8 +76,25 @@ async function getToken() {
  */
 export async function smsLogin(prevState: ActionState, formData: FormData) {
   const phone = formData.get("phone");
-  // TODO: 휴대폰 번호가 실존하는지 검증하고, 존재하지 않는 번호라면 에러를 반환합니다.
   const vertification_token = formData.get("vertification_token");
+
+  const phoneExists = await db.user.findFirst({
+    where: {
+      phone: phone as string,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (!phoneExists) {
+    return {
+      vertification_token: false,
+      error: {
+        phone: PHONE_ERROR_MESSAGE,
+      },
+    };
+  }
+
   if (!prevState.vertification_token) {
     const result = phoneSchema.safeParse(phone);
     if (!result.success) {
@@ -140,8 +157,6 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
         error: result.error.flatten(),
       };
     } else {
-      // TODO: 토큰을 검증할 때, 전화번호도 함께 검증하여 일치하지 않는 경우 에러를 반환합니다.
-
       // get the userId of token
       const token = await db.sMSToken.findUnique({
         where: {
@@ -152,6 +167,23 @@ export async function smsLogin(prevState: ActionState, formData: FormData) {
           userId: true,
         },
       });
+      const phoneMatches = await db.user.findFirst({
+        where: {
+          id: token?.userId,
+          phone: phone as string,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!phoneMatches) {
+        return {
+          vertification_token: true,
+          error: {
+            phone: "전화번호가 일치하지 않습니다.",
+          },
+        };
+      }
 
       // log the user in and delete the token
       if (token) {
