@@ -13,7 +13,7 @@ export default function Loading() {
           <div className="h-5 w-20 bg-neutral-700 rounded-md" />
         </div>
       </div>
-      <div className="h-10 w-80 bg-neutral-700 rounded-md" />
+      <div className="h-8 w-80 bg-neutral-700 rounded-md" />
     </div>
   );
 }
