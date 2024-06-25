@@ -1,12 +1,46 @@
-async function getProduct() {
-  await new Promise((resolve) => setTimeout(resolve, 30000));
+import db from "@/lib/db";
+import getSession from "@/lib/session";
+import { notFound } from "next/navigation";
+
+async function getIsOwner(userId: number) {
+  const session = await getSession();
+  if (session.id) {
+    return session.id === userId;
+  }
+  return false;
+}
+
+async function getProduct(id: number) {
+  const product = await db.product.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+  return product;
 }
 
 export default async function ProductDetail({
-  params: { id },
+  params,
 }: {
   params: { id: string };
 }) {
-  const product = await getProduct();
+  const id = Number(params.id);
+  if (isNaN(id)) {
+    return notFound();
+  }
+  const product = await getProduct(id);
+  if (!product) {
+    return notFound();
+  }
+  const isOwner = await getIsOwner(product.userId);
+
   return <span>Product Detail of the {id}</span>;
 }
