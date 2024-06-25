@@ -2,7 +2,8 @@
 
 import db from "@/lib/db";
 
-export async function getMoreProducts(page: number) {
+export async function getMoreProducts(skip: number) {
+  const pageSize = 1;
   const products = await db.product.findMany({
     select: {
       id: true,
@@ -11,8 +12,8 @@ export async function getMoreProducts(page: number) {
       created_at: true,
       photo: true,
     },
-    take: 1,
-    skip: page,
+    take: pageSize,
+    skip: skip * pageSize,
     orderBy: {
       created_at: "desc",
     },
