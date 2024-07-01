@@ -11,11 +11,10 @@ interface ProductListProps {
 
 export default function ProductList({ initialProducts }: ProductListProps) {
   const [products, setProducts] = useState(initialProducts);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
 
-  const trigger = useRef<HTMLSpanElement | null>(null);
+  const trigger = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const observer = new IntersectionObserver(
       async (
@@ -25,7 +24,6 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         const element = entries[0];
         if (element.isIntersecting && trigger.current) {
           observer.unobserve(trigger.current);
-          setIsLoading(true);
           const newProducts = await getMoreProducts(page);
           if (newProducts.length === 0) {
             setIsLastPage(true);
@@ -33,7 +31,6 @@ export default function ProductList({ initialProducts }: ProductListProps) {
             setPage((prev) => prev + 1);
             setProducts([...products, ...newProducts]);
           }
-          setIsLoading(false);
         }
       },
       { threshold: 1.0, rootMargin: "0px 0px -100px 0px" }
@@ -54,15 +51,16 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         <ListProduct key={product.id} {...product} />
       ))}
       {isLastPage ? null : (
-        <span
-          ref={trigger}
-          style={{
-            marginTop: `${page + 1 * 900}vh`,
-          }}
-          className="mb-96 text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-0- active:scale-95 transition-transform disabled:bg-gray-600 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "로딩 중..." : "더 보기"}
-        </span>
+        <div ref={trigger}>
+          <div className="flex gap-5">
+            <div className="size-28 bg-neutral-700 rounded-md" />
+            <div className="flex flex-col gap-2 *:rounded-md justify-center">
+              <div className="bg-neutral-700 h-5 w-40" />
+              <div className="bg-neutral-700 h-5 w-20" />
+              <div className="bg-neutral-700 h-5 w-10" />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
