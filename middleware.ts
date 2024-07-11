@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
   } else {
     // 이미 로그인 한 유저가 비로그인 유저만 접근할 수 있는 url에 접근했을 때
     if (exists) {
-      return NextResponse.redirect(new URL("/products", request.url));
+      return NextResponse.redirect(new URL("/home", request.url));
     }
   }
 }
