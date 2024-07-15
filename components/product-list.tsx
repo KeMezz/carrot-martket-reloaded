@@ -4,6 +4,7 @@ import { InitialProducts } from "@/app/(tabs)/home/page";
 import ListProduct from "./list-product";
 import { useEffect, useRef, useState } from "react";
 import { getMoreProducts } from "@/app/(tabs)/home/actions";
+import ProductListSkeleton from "./product-list-skeleton";
 
 interface ProductListProps {
   initialProducts: InitialProducts;
@@ -50,16 +51,13 @@ export default function ProductList({ initialProducts }: ProductListProps) {
       {products.map((product) => (
         <ListProduct key={product.id} {...product} />
       ))}
-      {isLastPage ? null : (
-        <div ref={trigger}>
-          <div className="flex gap-5">
-            <div className="size-28 bg-neutral-700 rounded-md" />
-            <div className="flex flex-col gap-2 *:rounded-md justify-center">
-              <div className="bg-neutral-700 h-5 w-40" />
-              <div className="bg-neutral-700 h-5 w-20" />
-              <div className="bg-neutral-700 h-5 w-10" />
-            </div>
-          </div>
+      {isLastPage ? (
+        <div className="flex justify-center w-full text-neutral-600 mt-4">
+          마지막 항목입니다
+        </div>
+      ) : (
+        <div ref={trigger} className="flex flex-col gap-5">
+          <ProductListSkeleton />
         </div>
       )}
     </div>
