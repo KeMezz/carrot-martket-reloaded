@@ -6,6 +6,7 @@ import db from "@/lib/db";
 import { formatToWon } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
 async function getProduct(id: number) {
   const product = await db.product.findUnique({
@@ -29,6 +30,9 @@ export default async function ProductModal({
 }: {
   params: { id: string };
 }) {
+  if (!Number(params.id)) {
+    return notFound();
+  }
   const product = await getProduct(+params.id);
   return (
     <div>
