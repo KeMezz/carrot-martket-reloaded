@@ -8,7 +8,7 @@ import { uploadProduct } from "./actions";
 import { useFormState } from "react-dom";
 import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
 
-export default function AddProduct() {
+export default function UploadProduct() {
   const [preview, setPreview] = useState("");
   const [state, action] = useFormState(uploadProduct, null);
 

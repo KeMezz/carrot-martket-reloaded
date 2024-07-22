@@ -30,13 +30,10 @@ export default async function ProductModal({
 }: {
   params: { id: string };
 }) {
-  if (!Number(params.id)) {
-    return notFound();
-  }
   const product = await getProduct(+params.id);
   return (
     <div>
-      <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-black bg-opacity-20 px-5">
+      <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-black bg-opacity-50 px-5">
         <ModalCloseButton />
         <div className="max-w-screen-sm w-full dark:bg-neutral-900 rounded-2xl overflow-x-scroll max-h-[calc(70vh)]">
           {product ? (
