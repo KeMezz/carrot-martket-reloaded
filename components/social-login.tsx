@@ -21,12 +21,12 @@ export default function SocialLogin() {
           </span>
           <span>Github로 로그인</span>
         </Link>
-        <Link className="primary-btn gap-2" href="/sms">
+        {/* <Link className="primary-btn gap-2" href="/sms">
           <span>
             <ChatBubbleOvalLeftEllipsisIcon className="size-5" />
           </span>
           <span>문자 메시지로 로그인</span>
-        </Link>
+        </Link> */}
       </div>
     </>
   );

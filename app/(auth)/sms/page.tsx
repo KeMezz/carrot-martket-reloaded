@@ -28,7 +28,7 @@ export default function SMSLogin() {
             name="vertification_token"
             type="number"
             placeholder="인증 코드"
-            errors={state.error?.formErrors}
+            // errors={state.error?.formErrors}
             required={true}
             min={100000}
             max={999999}
@@ -39,7 +39,7 @@ export default function SMSLogin() {
             name="phone"
             type="text"
             placeholder="휴대폰 번호"
-            errors={state?.error?.formErrors}
+            // errors={state?.error?.formErrors}
             required={true}
           />
         )}
