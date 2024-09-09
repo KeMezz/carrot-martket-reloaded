@@ -2,15 +2,10 @@ import ProductList from "@/components/product-list";
 import db from "@/lib/db";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Prisma } from "@prisma/client";
-import { unstable_cache as nextCache, revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
-const getCachedProducts = nextCache(getInitialProducts, ["home-products"], {
-  revalidate: 60,
-});
-
 async function getInitialProducts() {
-  console.log("hit!!!");
   const products = await db.product.findMany({
     select: {
       id: true,
@@ -19,7 +14,6 @@ async function getInitialProducts() {
       created_at: true,
       photo: true,
     },
-    // take: 1,
     orderBy: {
       created_at: "desc",
     },
