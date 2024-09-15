@@ -5,7 +5,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { unstable_cache as nextCache, revalidateTag } from "next/cache";
+import { unstable_cache as nextCache } from "next/cache";
 
 async function getIsOwner(userId: number) {
   const session = await getSession();
@@ -51,11 +51,6 @@ async function getProductTitle(id: number) {
   });
   return product;
 }
-
-const revalidate = async () => {
-  "use server";
-  revalidateTag("product-title");
-};
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const product = await getCachedProductTitle(Number(params.id));

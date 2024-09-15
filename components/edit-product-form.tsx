@@ -41,7 +41,6 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   };
 
   const router = useRouter();
-
   const {
     register,
     formState: { errors },
@@ -63,7 +62,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     if (response.status === 200) {
       window.location.href = `/products/${product.id}`;
     } else {
-      console.error(response);
+      router.push("/404");
     }
   };
 
