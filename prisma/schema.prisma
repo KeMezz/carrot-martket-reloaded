@@ -17,8 +17,11 @@ model User {
   avatar     String?    @default("https://avatars.githubusercontent.com/u/1?v=4")
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-  SMSToken   SMSToken[]
-  Product    Product[]
+  tokens     SMSToken[]
+  products   Product[]
+  posts      Post[]
+  likes      Like[]
+  comments   Comment[]
 }
 
 model SMSToken {
@@ -38,6 +41,41 @@ model Product {
   photo       String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  views       Int       @default(0)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  likes       Like[]
+  comments    Comment[]
+}
+
+model Like {
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int
+  userId     Int
+
+  @@id(name: "id", [userId, postId])
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  text       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int
 }
