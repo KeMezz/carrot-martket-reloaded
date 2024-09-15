@@ -41,7 +41,6 @@ const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
 });
 
 async function getProductTitle(id: number) {
-  console.log("title");
   const product = await db.product.findUnique({
     where: {
       id,
@@ -115,21 +114,27 @@ export default async function ProductDetail({
         <span className="font-semibold text-xl">
           {formatToWon(product.price)}원
         </span>
-        <div className="flex gap-4">
-          <form action={revalidate}>
-            <button>revalidate cache</button>
-          </form>
+        <div className="flex gap-4 items-center">
           {isOwner ? (
-            <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-              삭제하기
-            </button>
-          ) : null}
-          <Link
-            className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold"
-            href={``}
-          >
-            채팅하기
-          </Link>
+            <>
+              <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                삭제하기
+              </button>
+              <Link
+                className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold"
+                href={`/products/${id}/edit`}
+              >
+                수정하기
+              </Link>
+            </>
+          ) : (
+            <Link
+              className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold"
+              href={``}
+            >
+              채팅하기
+            </Link>
+          )}
         </div>
       </div>
     </div>

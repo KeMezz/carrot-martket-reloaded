@@ -5,17 +5,24 @@ import { PhotoIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import Input from "./input";
 import Button from "./button";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { Product } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 interface EditProductFormData {
-  photo: File;
+  photo: FileList;
   title: string;
   price: number;
-  description: number;
+  description: string;
 }
 
-export default function EditProductForm() {
-  const [preview, setPreview] = useState("");
+interface EditProductFormProps {
+  product: Product;
+}
+
+export default function EditProductForm({ product }: EditProductFormProps) {
+  const [photo, setPhoto] = useState<File | string>("");
+  const [preview, setPreview] = useState(product.photo);
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
@@ -29,17 +36,35 @@ export default function EditProductForm() {
       return;
     }
     const url = URL.createObjectURL(file);
+    setPhoto(file);
     setPreview(url);
   };
+
+  const router = useRouter();
 
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<EditProductFormData>();
+  const onSubmit = async (data: EditProductFormData) => {
+    const formData = new FormData();
 
-  const onSubmit = (formData: EditProductFormData) => {
-    console.log(formData);
+    formData.append("title", data.title);
+    formData.append("price", data.price + "");
+    formData.append("description", data.description);
+    formData.append("photo", photo);
+
+    const response = await fetch(`/www/products/${product.id}/edit`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.status === 200) {
+      window.location.href = `/products/${product.id}`;
+    } else {
+      console.error(response);
+    }
   };
 
   return (
@@ -67,7 +92,7 @@ export default function EditProductForm() {
         ) : null}
       </div>
       <input
-        {...register("photo", { required: "사진을 추가해주세요." })}
+        {...register("photo")}
         onChange={onImageChange}
         type="file"
         id="photo"
@@ -79,14 +104,15 @@ export default function EditProductForm() {
         register={register("title", {
           required: "상품명을 입력해주세요.",
           maxLength: {
-            value: 20,
-            message: "상품명은 20자 이내로 입력해주세요.",
+            value: 100,
+            message: "상품명은 100자 이내로 입력해주세요.",
           },
         })}
         name="title"
         required
         placeholder="상품명"
         type="text"
+        defaultValue={product.title}
         errors={errors.title ? [errors?.title?.message!] : undefined}
       />
       <Input
@@ -99,6 +125,7 @@ export default function EditProductForm() {
         })}
         name="price"
         type="number"
+        defaultValue={product.price}
         required
         placeholder="가격"
         errors={errors.price ? [errors?.price?.message!] : undefined}
@@ -114,6 +141,7 @@ export default function EditProductForm() {
         name="description"
         type="text"
         required
+        defaultValue={product.description}
         placeholder="자세한 설명"
         errors={
           errors.description ? [errors?.description?.message!] : undefined
