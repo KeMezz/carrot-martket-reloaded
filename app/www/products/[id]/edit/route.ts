@@ -42,6 +42,8 @@ export async function POST(
     });
 
     revalidatePath("/home");
+    revalidatePath(`/products/${id}`);
+
     return new Response("Updated", { status: 200 });
   } catch (error) {
     return new Response("Error Occured", { status: 400 });
