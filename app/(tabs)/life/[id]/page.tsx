@@ -48,12 +48,19 @@ async function getPost(id: number) {
   }
 }
 
-const getCachedPost = nextCache(getPost, ["post-detail"], {
-  tags: [`post-detail`],
-});
-const getCachedLikeStatus = nextCache(getLikeStatus, ["post-like-status"], {
-  tags: ["like-status"],
-});
+function getCachedLikeStatus(postId: number) {
+  const cachedOperation = nextCache(getLikeStatus, ["post-like-status"], {
+    tags: [`like-status-${postId}`],
+  });
+  return cachedOperation(postId);
+}
+
+function getCachedPost(postId: number) {
+  const cachedOperation = nextCache(getPost, ["post-detail"], {
+    tags: [`post-detail`],
+  });
+  return cachedOperation(postId);
+}
 
 async function getLikeStatus(postId: number) {
   const session = await getSession();
@@ -70,7 +77,6 @@ async function getLikeStatus(postId: number) {
       postId,
     },
   });
-
   return {
     isLiked: Boolean(isLiked),
     likeCount,
@@ -102,7 +108,7 @@ export default async function PostDetail({
           userId: session.id!,
         },
       });
-      revalidateTag(`like-status`);
+      revalidateTag(`like-status-${id}`);
     } catch (e) {
       console.error(e);
     }
@@ -120,7 +126,7 @@ export default async function PostDetail({
           },
         },
       });
-      revalidateTag(`like-status`);
+      revalidateTag(`like-status-${id}`);
     } catch (e) {
       console.error(e);
     }
