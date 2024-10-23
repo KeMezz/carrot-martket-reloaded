@@ -35,3 +35,26 @@ export async function dislikePost(postId: number) {
     console.error(e);
   }
 }
+
+export async function postComment(text: string, postId: number) {
+  const session = await getSession();
+  const comment = await db.comment.create({
+    data: {
+      userId: session.id!,
+      postId: Number(postId),
+      text,
+    },
+    select: {
+      text: true,
+      user: {
+        select: {
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+  revalidateTag(`post-comments-${postId}`);
+
+  return comment;
+}
