@@ -74,11 +74,34 @@ export default async function ProductDetail({
   }
   const isOwner = await getIsOwner(product.userId);
 
-  const createChatRoom = async () => {
+  const redirectToChatRoom = async () => {
     "use server";
     const session = await getSession();
-    const room = await db.chatRoom.create({
+
+    const room = await db.chatRoom.findFirst({
+      where: {
+        product: {
+          id: Number(params.id),
+        },
+        users: {
+          some: {
+            id: {
+              in: [product.userId, session.id!],
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (room) {
+      return redirect(`/chats/${room.id}`);
+    }
+
+    const newRoom = await db.chatRoom.create({
       data: {
+        productId: Number(params.id),
         users: {
           connect: [
             {
@@ -94,8 +117,7 @@ export default async function ProductDetail({
         id: true,
       },
     });
-
-    redirect(`/chats/${room.id}`);
+    redirect(`/chats/${newRoom.id}`);
   };
 
   return (
@@ -147,7 +169,7 @@ export default async function ProductDetail({
               </Link>
             </>
           ) : (
-            <form action={createChatRoom}>
+            <form action={redirectToChatRoom}>
               <button className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold">
                 채팅하기
               </button>
