@@ -22,7 +22,7 @@ export default function TabBar() {
   return (
     <div className="fixed bottom-0 w-full mx-auto max-w-screen-md grid grid-cols-5 border-neutral-600 border-t px-5 py-3 *:text-white bg-neutral-800 -z-0">
       <Link href="/home" className="flex flex-col items-center gap-px">
-        {pathname === "/home" ? (
+        {pathname.startsWith("/home") ? (
           <SolidHomeIcon className="w-7 h-7" />
         ) : (
           <OutlineHomeIcon className="w-7 h-7" />
@@ -30,15 +30,15 @@ export default function TabBar() {
         <span>홈</span>
       </Link>
       <Link href="/life" className="flex flex-col items-center gap-px">
-        {pathname === "/life" ? (
+        {pathname.startsWith("/life") ? (
           <SolidNewspaperIcon className="w-7 h-7" />
         ) : (
           <OutlineNewspaperIcon className="w-7 h-7" />
         )}
         <span>동네생활</span>
       </Link>
-      <Link href="/chat" className="flex flex-col items-center gap-px">
-        {pathname === "/chat" ? (
+      <Link href="/chats" className="flex flex-col items-center gap-px">
+        {pathname.startsWith("/chats") ? (
           <SolidChatIcon className="w-7 h-7" />
         ) : (
           <OutlineChatIcon className="w-7 h-7" />
@@ -46,7 +46,7 @@ export default function TabBar() {
         <span>채팅</span>
       </Link>
       <Link href="/live" className="flex flex-col items-center gap-px">
-        {pathname === "/live" ? (
+        {pathname.startsWith("/live") ? (
           <SolidVideoIcon className="w-7 h-7" />
         ) : (
           <OutlineVideoIcon className="w-7 h-7" />
@@ -54,7 +54,7 @@ export default function TabBar() {
         <span>쇼핑</span>
       </Link>
       <Link href="/profile" className="flex flex-col items-center gap-px">
-        {pathname === "/profile" ? (
+        {pathname.startsWith("/profile") ? (
           <SolidUserIcon className="w-7 h-7" />
         ) : (
           <OutlineUserIcon className="w-7 h-7" />
