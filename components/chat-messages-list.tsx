@@ -26,9 +26,11 @@ export default function ChatMessagesList({
   const [text, setText] = useState("");
   const [messages, setMessages] = useState(initialMessages);
   const channel = useRef<RealtimeChannel>();
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.currentTarget.value);
   };
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessages((prev) => [
@@ -58,6 +60,7 @@ export default function ChatMessagesList({
     await saveMessage(text, chatRoomId);
     setText("");
   };
+
   useEffect(() => {
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -73,7 +76,8 @@ export default function ChatMessagesList({
     return () => {
       channel.current?.unsubscribe();
     };
-  }, []);
+  }, [chatRoomId]);
+
   return (
     <div className="flex flex-col justify-end min-h-screen gap-5 p-5">
       {messages.map((message) => (

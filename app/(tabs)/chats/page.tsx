@@ -5,6 +5,7 @@ import db from "@/lib/db";
 import getSession from "@/lib/session";
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_cache as nextCache } from "next/cache";
 
 async function getChatRooms() {
   const session = await getSession();
@@ -43,8 +44,12 @@ async function getChatRooms() {
   return chatRooms;
 }
 
+const getCachedChatRooms = nextCache(getChatRooms, ["chatrooms"], {
+  tags: [`chatrooms`],
+});
+
 export default async function Chat() {
-  const chatRooms = await getChatRooms();
+  const chatRooms = await getCachedChatRooms();
   return (
     <div className="p-2 divide-y">
       {chatRooms.map((chatRoom) => (
